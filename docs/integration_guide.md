@@ -1,4 +1,4 @@
-# 📖 Integration Guide
+#  Integration Guide
 
 This guide outlines how to integrate the QuantumShield middleware into an existing Zephyr project.
 
