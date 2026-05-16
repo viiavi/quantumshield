@@ -4,6 +4,9 @@
 
 **Post-Quantum Cryptographic Migration and Autonomous Self-Healing for Resource-Constrained IoT Ecosystems.**
 
+[![Watch the Demo Video](https://img.shields.io/badge/Demo-Video-red?style=for-the-badge&logo=youtube)](./Video%20Project.mp4)
+
+
 ---
 
 ## Technical Overview
@@ -42,18 +45,73 @@ The **Qveil CLI** serves as the central management engine for the QuantumShield 
 
 *(See the `demo/CLI_TRANSCRIPT.md` for a full command-line walk-through.)*
 
+### Build and Deployment Visualization
+![Qveil CLI Build Progress](./screenshots/build_progress.png)
+*Figure 1: Real-time progress streaming of the unified PQC build engine.*
+
 ---
+
 
 ## System Architecture
 
 The architecture is built upon a modular abstraction layer that decouples cryptographic primitives from application logic, enabling "Cryptographic Agility."
+
+### Autonomous Migration Lifecycle
+The following diagram illustrates the autonomous migration and self-healing lifecycle managed by QuantumShield.
+
+```mermaid
+graph TD
+    A[Power On / Reset] --> B{Verify Boot Image}
+    B -- Failure --> C[Halt / Secure Recovery]
+    B -- Success --> D[Initialize PSA Storage]
+    D --> E[Load Migration State]
+    E --> F{Evaluate Health Metrics}
+    
+    F -- Stable --> G[Execute Application Logic]
+    F -- Failure Threshold Reached --> H[Trigger Autonomous Rollback]
+    
+    G --> I{OTA Migration Signal}
+    I -- No --> G
+    I -- Yes --> J[Download PQC Firmware]
+    J --> K[Update Migration State]
+    K --> L[Soft Reset]
+    L --> A
+    
+    H --> M[Restore Previous Stable Phase]
+    M --> L
+```
+
+### Hardware-Backed Security (TrustZone SPE/NSPE)
+QuantumShield leverages ARM TrustZone (TF-M) to isolate sensitive PQC key material and migration metadata.
+
+```mermaid
+graph LR
+    subgraph NSPE ["Non-Secure Processing Environment (App)"]
+        direction TB
+        App[CTAP2 Application]
+        QS_NS[QuantumShield NS-API]
+        App <--> QS_NS
+    end
+
+    subgraph SPE ["Secure Processing Environment (Kernel/TF-M)"]
+        direction TB
+        PSA[PSA Security APIs]
+        KEM[ML-KEM / ML-DSA Engine]
+        Storage[PSA Protected Storage]
+        PSA <--> KEM
+        PSA <--> Storage
+    end
+
+    QS_NS <--- "PSA RPC / TZ-Gateway" ---> PSA
+```
 
 ### Key Components:
 *   **Migration State Manager:** Orchestrates transitions between security levels based on health metrics.
 *   **PSA Storage Integration:** Secures sensitive PQC key material and migration metadata within the Secure Processing Environment (SPE).
 *   **Constraint-Aware Selector:** (Internal Research) An AI-driven model that selects optimal PQC parameters based on real-time hardware profiling (RAM/Flash/Cycle counts).
 
-*(Refer to the `/architecture` directory for technical diagrams and security models.)*
+*(Refer to the `/architecture` directory for technical details and security models.)*
+
 
 ---
 
@@ -94,6 +152,16 @@ int quantum_shield_encapsulate(struct qs_context *ctx,
     return hybrid_kdf_derive(shared_secret, FINAL_SECRET_SIZE);
 }
 ```
+
+---
+
+## 📺 Demo
+
+### Autonomous Migration and Rollback
+![PQC Migration Log](./screenshots/migration_log.png)
+*Figure 2: Serial logs demonstrating the state machine transitioning from Classical to PQC_ONLY mode.*
+
+*(Detailed videos and serial logs can be found in the `/demo` and `/screenshots` folders)*
 
 ---
 
