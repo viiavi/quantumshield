@@ -1,3 +1,5 @@
+![QuantumShield Banner](assets/banner.png)
+
 # QuantumShield: Runtime Cryptographic Agility for Zephyr RTOS
 
 **Post-Quantum Cryptographic Migration and Autonomous Self-Healing for Resource-Constrained IoT Ecosystems.**
