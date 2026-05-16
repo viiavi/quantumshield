@@ -28,6 +28,20 @@ A critical differentiator of QuantumShield is its autonomous self-healing capabi
 
 ---
 
+## DevOps & Tooling: Qveil CLI
+
+The **Qveil CLI** serves as the central management engine for the QuantumShield ecosystem, bridging the gap between high-level security policy and low-level firmware deployment.
+
+### Key Capabilities:
+*   **Smart Hardware Profiling:** Automatically detects hardware capabilities (RAM, Flash, CPU architecture) and recommends optimal PQC algorithm configurations.
+*   **Unified Build Orchestration:** Simplifies complex Zephyr **Sysbuild** workflows, automatically merging MCUboot, TF-M, and the application into a single signed `merged.hex`.
+*   **Live Progress Streaming:** Provides real-time feedback during long-running Ninja builds and flashing operations.
+*   **Lifecycle Management:** Enables remote querying of the device's cryptographic state and manual triggering of "Self-Healing" rollback tests.
+
+*(See the `demo/CLI_TRANSCRIPT.md` for a full command-line walk-through.)*
+
+---
+
 ## System Architecture
 
 The architecture is built upon a modular abstraction layer that decouples cryptographic primitives from application logic, enabling "Cryptographic Agility."
