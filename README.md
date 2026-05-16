@@ -45,12 +45,15 @@ The architecture is built upon a modular abstraction layer that decouples crypto
 
 *Hardware: nRF54L15 DK (ARM Cortex-M33 @ 128MHz)*
 
-| Metric | ECC P-256 | ML-KEM-768 | Hybrid (Total) |
-| :--- | :--- | :--- | :--- |
-| **Execution Time (KeyGen)** | [Pending] ms | [Pending] ms | [Pending] ms |
-| **Peak Heap Allocation** | [Pending] KB | [Pending] KB | [Pending] KB |
-| **Stack Usage** | [Pending] KB | [Pending] KB | [Pending] KB |
-| **Flash Footprint** | [Pending] KB | [Pending] KB | [Pending] KB |
+| Metric | Classical (ECC P-256) | ML-KEM-768 (FIPS 203) |
+| :--- | :--- | :--- |
+| **Flash Footprint (App)** | 210 KB (Est.) | 289,952 B (83.28%) |
+| **RAM Usage (Peak)** | 42 KB (Est.) | 87,980 B (76.54%) |
+| **Bootloader Flash** | N/A | 51,064 B (92.35%) |
+| **Bootloader RAM** | N/A | 22,176 B (28.50%) |
+| **Active Algorithm** | ECDSA / ECDH | ML-KEM-768 |
+| **Migration State** | CLASSICAL | PQC_ONLY |
+
 
 ---
 
