@@ -103,7 +103,7 @@ graph LR
         PSA <--> Storage
     end
 
-    QS_NS <--- "PSA RPC / TZ-Gateway" ---> PSA
+    QS_NS <==> |"PSA RPC / TZ-Gateway"| PSA
 ```
 
 ### Key Components:
