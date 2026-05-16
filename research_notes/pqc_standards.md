@@ -1,4 +1,4 @@
-# 🧪 PQC Research & Standards
+#  PQC Research & Standards
 
 QuantumShield is designed with a focus on emerging NIST standards for Post-Quantum Cryptography.
 
