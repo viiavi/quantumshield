@@ -45,11 +45,12 @@ The **Qveil CLI** serves as the central management engine for the QuantumShield 
 
 *(See the `demo/CLI_TRANSCRIPT.md` for a full command-line walk-through.)*
 
-### Build and Deployment Visualization
-![Qveil CLI Build Progress](./screenshots/build_progress.png)
-*Figure 1: Real-time progress streaming of the unified PQC build engine.*
+### Build and Migration Management
+![Qveil Advance and Status](./screenshots/qveil_advance.png)
+*Figure 1: Using the Qveil CLI to advance the cryptographic state to PREFER_PQC on the nRF54L15 DK.*
 
 ---
+
 
 
 ## System Architecture
@@ -157,13 +158,18 @@ int quantum_shield_encapsulate(struct qs_context *ctx,
 
 ## 📺 Demo
 
-### Autonomous Migration and Rollback
-![PQC Migration Log](./screenshots/migration_log.png)
-*Figure 2: Serial logs demonstrating the state machine transitioning from Classical to PQC_ONLY mode.*
+### Autonomous Migration and Rollback Lifecycle
+QuantumShield provides a deterministic path for migrating devices to PQC, with built-in safety nets for critical infrastructure.
+
+| Phase 1: Advancement | Phase 2: Quantum-Safe State | Phase 3: Fault Rollback |
+| :--- | :--- | :--- |
+| ![Advance](./screenshots/qveil_advance.png) | ![PQC Only](./screenshots/qveil_status_pqc.png) | ![Rollback](./screenshots/qveil_rollback.png) |
+| *Transitioning to PQC* | *Full PQC_ONLY Mode* | *Autonomous Rollback* |
 
 *(Detailed videos and serial logs can be found in the `/demo` and `/screenshots` folders)*
 
 ---
+
 
 ## Project Structure
 
