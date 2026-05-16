@@ -1,21 +1,55 @@
-# 🏗️ System Architecture Overview
+# System Architecture and Security Model
 
-QuantumShield is architected as a modular middleware layer for Zephyr RTOS, specifically designed to handle the complexities of PQC migration on resource-constrained hardware.
+The QuantumShield architecture is designed to provide high-assurance cryptographic agility for embedded systems. It utilizes a layered approach to isolate sensitive cryptographic operations and migration logic.
 
-## Key Components
+## System Flow Diagram
 
-### 1. Migration State Manager
-The central authority that governs the device's cryptographic state. It tracks whether the device is in **Classical**, **Hybrid**, or **Full PQC** mode and manages transitions triggered by OTA updates or self-healing events.
+The following diagram illustrates the autonomous migration and self-healing lifecycle managed by QuantumShield.
 
-### 2. Secure State Storage (PSA/TF-M)
-Leveraging ARM TrustZone, the migration state and sensitive PQC key material are stored within the Secure Processing Environment (SPE). This ensures that even if the Application (Non-Secure) environment is compromised, the cryptographic integrity remains intact.
+```mermaid
+graph TD
+    A[Power On / Reset] --> B{Verify Boot Image}
+    B -- Failure --> C[Halt / Secure Recovery]
+    B -- Success --> D[Initialize PSA Storage]
+    D --> E[Load Migration State]
+    E --> F{Evaluate Health Metrics}
+    
+    F -- Stable --> G[Execute Application Logic]
+    F -- Failure Threshold Reached --> H[Trigger Autonomous Rollback]
+    
+    G --> I{OTA Migration Signal}
+    I -- No --> G
+    I -- Yes --> J[Download PQC Firmware]
+    J --> K[Update Migration State]
+    K --> L[Soft Reset]
+    L --> A
+    
+    H --> M[Restore Previous Stable Phase]
+    M --> L
+```
 
-### 3. Abstraction Layer (HAL)
-A unified API that abstracts the underlying PQC implementation (e.g., Kyber, Dilithium). This allows for "cryptographic agility," enabling the swap of algorithms without modifying the core application logic.
+## Security Domains
 
-## Data Flow: OTA Migration
-1. **Cloud Signal:** The backend sends a migration command.
-2. **Download:** The PQC-ready firmware is downloaded via BLE/WiFi.
-3. **Verification:** MCUboot verifies the image signature.
-4. **Transition:** Upon boot, the State Manager updates the phase to "Hybrid."
-5. **Rollback (Optional):** If the PQC handshake fails, the device reverts to the previous stable state.
+### 1. Secure Processing Environment (SPE)
+Running within ARM TrustZone (TF-M), the SPE handles:
+*   **PQC Key Material:** Private keys for ML-KEM and ML-DSA never leave the SPE.
+*   **State Persistence:** The migration state (Legacy, Hybrid, PQC) is stored in PSA Protected Storage, preventing tampering from the Non-Secure environment.
+*   **Verification:** Secure boot and OTA signature verification are anchored in the SPE.
+
+### 2. Non-Secure Processing Environment (NSPE)
+The application-level middleware (QuantumShield NS-API) handles:
+*   **Migration Orchestration:** Triggering updates and monitoring network health.
+*   **Cryptographic Wrappers:** Providing a unified API to the application while delegating heavy lifting to the SPE or hardware accelerators.
+*   **Resource Monitoring:** Profiling RAM and CPU usage to ensure PQC operations stay within safe bounds.
+
+## Migration State Machine
+
+QuantumShield implements a deterministic state machine to ensure consistency across the fleet:
+
+| State | Classical Crypto | PQC Crypto | Self-Healing Active |
+| :--- | :--- | :--- | :--- |
+| **STATE_LEGACY** | Enabled | Disabled | No |
+| **STATE_HYBRID** | Enabled | Enabled | Yes (Primary) |
+| **STATE_PQC** | Disabled | Enabled | Yes (Secondary) |
+
+The transition from `STATE_HYBRID` to `STATE_PQC` is only permitted after a sustained period of "System Health" verification, ensuring the target hardware can handle the PQC computational load without affecting real-time RTOS deadlines.

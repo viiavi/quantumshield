@@ -1,95 +1,93 @@
-# 🛡️ QuantumShield: Runtime Cryptographic Agility for Zephyr RTOS
+# QuantumShield: Runtime Cryptographic Agility for Zephyr RTOS
 
-**Securing the IoT ecosystem against quantum threats with autonomous self-healing and hybrid cryptographic agility.**
-
----
-
-## 🌟 Overview
-
-As quantum computing advances, existing asymmetric cryptographic standards (RSA, ECC) face obsolescence. **QuantumShield** is a portfolio-safe, high-performance middleware designed for **Zephyr RTOS** that enables seamless, runtime migration to **Post-Quantum Cryptography (PQC)** without requiring hardware replacements.
-
-This project demonstrates a production-ready architecture for implementing **ML-KEM (FIPS 203)** and **ML-DSA (FIPS 204)** in resource-constrained IoT environments, featuring a unique "Self-Healing" migration engine.
+**Post-Quantum Cryptographic Migration and Autonomous Self-Healing for Resource-Constrained IoT Ecosystems.**
 
 ---
 
-## 🚀 Key Innovations
+## Technical Overview
 
-### 1. Hybrid Cryptographic Agility
-QuantumShield doesn't just replace classical crypto; it utilizes a **Hybrid Key Exchange** pipeline. By combining classical ECC with PQC (e.g., ML-KEM-768), the system maintains security even if one algorithm is compromised, meeting the highest standards of NIST's transition guidelines.
+QuantumShield is a security-critical middleware layer designed for Zephyr RTOS, facilitating the seamless transition from classical asymmetric cryptography (RSA, ECC) to NIST-standardized Post-Quantum Cryptography (PQC). 
 
-### 2. Autonomous Self-Healing Migration
-The core of QuantumShield is a multi-stage migration state machine:
-- **Phase 1 (Classical):** Standard ECC/RSA security.
-- **Phase 2 (Hybrid):** Combined Classical + PQC.
-- **Phase 3 (Post-Quantum):** Pure PQC for maximum future-proofing.
-- **🛡️ Self-Healing:** If a PQC anomaly or performance degradation is detected, the device autonomously rolls back to a known-safe Hybrid state via **MCUboot** and **OTA rollback** mechanisms.
-
-### 3. TrustZone-Aware Design
-Engineered to leverage **ARM TrustZone** (TF-M/PSA), ensuring that PQC key material and sensitive migration states are isolated in the Secure Processing Environment (SPE).
+The framework addresses the "Harvest Now, Decrypt Later" threat by implementing hybrid cryptographic schemes (NIST FIPS 203/204) coupled with a hardware-aware migration engine. It is specifically optimized for ARM Cortex-M architecture and leverages Trusted Firmware-M (TF-M) for secure state isolation.
 
 ---
 
-## 🏗️ Architecture
+## Core Engineering Innovations
 
-The system is built on a modular architecture that separates the migration logic from the underlying cryptographic primitives.
+### 1. Hybrid Cryptographic Pipeline
+To maintain backward compatibility and defense-in-depth, QuantumShield implements a dual-stack key exchange. By combining traditional Elliptic Curve Diffie-Hellman (ECDH) with Module-Lattice Key Encapsulation Mechanisms (ML-KEM-768), the system ensures cryptographic integrity even in the event of a partial primitive compromise.
 
-### System Flow
-1. **Boot Verification:** Secure boot via MCUboot validates the PQC-ready image.
-2. **State Evaluation:** The State Manager determines the current cryptographic phase.
-3. **Migration Engine:** Handles the transition between classical and quantum-safe states.
-4. **Hardware Acceleration:** Interfaces with hardware-accelerated crypto engines (e.g., nRF54 series) for optimal performance.
+### 2. Autonomous State-Machine Migration
+The system utilizes a multi-stage migration state machine that governs the device's security posture:
+*   **Legacy Mode:** Standard ECC/RSA primitives.
+*   **Transition Mode (Hybrid):** Simultaneous use of classical and PQC primitives.
+*   **Quantum-Ready Mode:** Pure PQC primitives (ML-KEM / ML-DSA).
 
-*(Diagrams coming soon: See `/architecture` and `/diagrams` folders)*
-
----
-
-## 📊 Benchmarks
-
-*Measured on nRF54L15 DK (ARM Cortex-M33 @ 128MHz)*
-
-| Metric                | Classical (ECC P-256) | Hybrid (ECC + ML-KEM) | PQC (ML-KEM-768) |
-|-----------------------|-----------------------|-----------------------|------------------|
-| **Key Generation**    | [Result] ms          | [Result] ms           | [Result] ms      |
-| **Encapsulation**     | N/A                   | [Result] ms           | [Result] ms      |
-| **Decapsulation**     | [Result] ms          | [Result] ms           | [Result] ms      |
-| **RAM Usage**         | [Result] KB          | [Result] KB           | [Result] KB      |
-| **Flash Footprint**   | [Result] KB          | [Result] KB           | [Result] KB      |
+### 3. Fault-Tolerant Rollback (Self-Healing)
+A critical differentiator of QuantumShield is its autonomous self-healing capability. If the PQC handshake or signature verification fails above a predefined threshold, the device triggers an automated rollback to a known-safe Hybrid state via MCUboot. This prevents denial-of-service (DoS) scenarios during fleet-wide migration.
 
 ---
 
-## 🛠️ Tech Stack
+## System Architecture
 
-- **RTOS:** Zephyr RTOS
-- **Hardware:** nRF54L15, Nucleo F401RE
-- **Security:** TF-M (Trusted Firmware-M), PSA Security APIs, MCUboot
-- **Algorithms:** ML-KEM (Kyber), ML-DSA (Dilithium), SLH-DSA (Sphinx+)
-- **Management:** Qveil (QuantumShield CLI)
+The architecture is built upon a modular abstraction layer that decouples cryptographic primitives from application logic, enabling "Cryptographic Agility."
 
----
+### Key Components:
+*   **Migration State Manager:** Orchestrates transitions between security levels based on health metrics.
+*   **PSA Storage Integration:** Secures sensitive PQC key material and migration metadata within the Secure Processing Environment (SPE).
+*   **Constraint-Aware Selector:** (Internal Research) An AI-driven model that selects optimal PQC parameters based on real-time hardware profiling (RAM/Flash/Cycle counts).
 
-## 📂 Repository Structure
-
-- `architecture/`: High-level system design and security model.
-- `benchmarks/`: Detailed performance analysis and resource consumption reports.
-- `diagrams/`: Visual representations of OTA flows, state machines, and TrustZone separation.
-- `docs/`: Technical specifications and integration guides.
-- `sanitized_firmware/`: Public-safe modules and abstraction layers.
-- `research_notes/`: Notes on PQC migration strategies and standards (NIST FIPS 203/204).
+*(Refer to the `/architecture` directory for technical diagrams and security models.)*
 
 ---
 
-## 📺 Demo
+## Performance Benchmarks
 
-*(Videos and serial logs showing OTA switching and migration state changes can be found in the `/demo` and `/screenshots` folders)*
+*Hardware: nRF54L15 DK (ARM Cortex-M33 @ 128MHz)*
+
+| Metric | ECC P-256 | ML-KEM-768 | Hybrid (Total) |
+| :--- | :--- | :--- | :--- |
+| **Execution Time (KeyGen)** | [Pending] ms | [Pending] ms | [Pending] ms |
+| **Peak Heap Allocation** | [Pending] KB | [Pending] KB | [Pending] KB |
+| **Stack Usage** | [Pending] KB | [Pending] KB | [Pending] KB |
+| **Flash Footprint** | [Pending] KB | [Pending] KB | [Pending] KB |
 
 ---
 
-## 🏆 Acknowledgments
+## Implementation Sample
 
-Developed as part of a research initiative into **Post-Quantum Security for Embedded Systems**. Special thanks to the community and mentors who supported the exploration of cryptographic agility in RTOS environments.
+```c
+/* Standardized API for Hybrid Key Encapsulation */
+int quantum_shield_encapsulate(struct qs_context *ctx, 
+                               uint8_t *ciphertext, 
+                               uint8_t *shared_secret) {
+    int rc;
+
+    /* 1. Perform Classical ECC Encapsulation */
+    rc = classical_ecc_encaps(ctx->ecc_pk, ciphertext, shared_secret);
+    if (rc < 0) return ERR_CLASSICAL_FAILURE;
+
+    /* 2. Perform PQC (ML-KEM) Encapsulation */
+    rc = ml_kem_encaps(ctx->pqc_pk, ciphertext + ECC_SIZE, shared_secret + ECC_SECRET_SIZE);
+    if (rc < 0) return ERR_PQC_FAILURE;
+
+    /* 3. Derive Hybrid Secret via KDF */
+    return hybrid_kdf_derive(shared_secret, FINAL_SECRET_SIZE);
+}
+```
 
 ---
 
-## 📝 License
+## Project Structure
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+*   `architecture/`: Security models and Mermaid-based system flows.
+*   `benchmarks/`: Empirical data on resource consumption and throughput.
+*   `docs/`: Integration guides for Zephyr-based applications.
+*   `sanitized_firmware/`: Reference implementation of the migration engine and core abstraction.
+*   `research_notes/`: Analysis of NIST FIPS 203/204 and hybrid crypto standards.
+
+---
+
+## Acknowledgments
+
+Developed as a submission for the **Unisys Innovation Program 2026**. Focused on advancing the state of post-quantum resilience in the global IoT ecosystem.
