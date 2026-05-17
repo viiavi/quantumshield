@@ -1,4 +1,4 @@
-![QuantumShield Banner](assests/banner3.png)
+![QuantumShield Banner](assests/banner5.png)
 
 # QuantumShield: Runtime Cryptographic Agility for Zephyr RTOS
 
